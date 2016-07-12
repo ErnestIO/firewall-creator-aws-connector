@@ -13,7 +13,8 @@ test:
 
 deps: dev-deps
 	go get -u github.com/nats-io/nats
-
+	go get -u github.com/aws/aws-sdk-go
+	
 dev-deps:
 	go get -u github.com/golang/lint/golint
 	go get -u github.com/smartystreets/goconvey/convey

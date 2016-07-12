@@ -1,6 +1,6 @@
-# Firewall creator aws connector 
+# Firewall creator aws connector
 
-Service to create aws firewalls, it responds to *firewall.create.aws* and will respond with *firewall.create.aws.done* or *firewall.create.aws.error*
+Service to create aws secuirty groups, it responds to *firewall.create.aws* and will respond with *firewall.create.aws.done* or *firewall.create.aws.error*
 
 ## Build status
 
@@ -41,4 +41,3 @@ Code and documentation copyright since 2015 r3labs.io authors.
 
 Code released under
 [the Mozilla Public License Version 2.0](LICENSE).
-
