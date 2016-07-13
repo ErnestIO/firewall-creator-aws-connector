@@ -6,7 +6,6 @@ package main
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -35,8 +34,8 @@ func eventHandler(m *nats.Msg) {
 		return
 	}
 
-	if f.Valid() == false {
-		f.Error(errors.New("Security Group is invalid"))
+	if err = f.Validate(); err != nil {
+		f.Error(err)
 		return
 	}
 
@@ -47,21 +46,6 @@ func eventHandler(m *nats.Msg) {
 	}
 
 	f.Complete()
-}
-
-func buildPermissions(rules []rule) []*ec2.IpPermission {
-	var perms []*ec2.IpPermission
-	for _, rule := range rules {
-		p := ec2.IpPermission{
-			FromPort:   aws.Int64(rule.FromPort),
-			ToPort:     aws.Int64(rule.ToPort),
-			IpProtocol: aws.String(rule.Protocol),
-		}
-		ip := ec2.IpRange{CidrIp: aws.String(rule.IP)}
-		p.IpRanges = append(p.IpRanges, &ip)
-		perms = append(perms, &p)
-	}
-	return perms
 }
 
 func createFirewall(ev *Event) error {
