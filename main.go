@@ -5,7 +5,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -21,14 +20,10 @@ import (
 var nc *nats.Conn
 var natsErr error
 
-func processEvent(data []byte) (*Event, error) {
-	var ev Event
-	err := json.Unmarshal(data, &ev)
-	return &ev, err
-}
-
 func eventHandler(m *nats.Msg) {
-	f, err := processEvent(m.Data)
+	var f Event
+
+	err := f.Process(m.Data)
 	if err != nil {
 		nc.Publish("firewall.create.aws.error", m.Data)
 		return
@@ -39,7 +34,7 @@ func eventHandler(m *nats.Msg) {
 		return
 	}
 
-	err = createFirewall(f)
+	err = createFirewall(&f)
 	if err != nil {
 		f.Error(err)
 		return
