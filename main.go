@@ -64,11 +64,10 @@ func createFirewall(ev *Event) error {
 	ev.SecurityGroupAWSID = *resp.GroupId
 
 	// Authorize Ingress
-	ingress := ev.Rules("ingress")
-	if len(ingress) > 0 {
+	if len(ev.SecurityGroupRules.Ingress) > 0 {
 		iReq := ec2.AuthorizeSecurityGroupIngressInput{
 			GroupId:       aws.String(ev.SecurityGroupAWSID),
-			IpPermissions: buildPermissions(ingress),
+			IpPermissions: buildPermissions(ev.SecurityGroupRules.Ingress),
 		}
 
 		_, err = svc.AuthorizeSecurityGroupIngress(&iReq)
@@ -78,11 +77,10 @@ func createFirewall(ev *Event) error {
 	}
 
 	// Authorize Egress
-	egress := ev.Rules("egress")
-	if len(egress) > 0 {
+	if len(ev.SecurityGroupRules.Egress) > 0 {
 		eReq := ec2.AuthorizeSecurityGroupEgressInput{
 			GroupId:       aws.String(ev.SecurityGroupAWSID),
-			IpPermissions: buildPermissions(egress),
+			IpPermissions: buildPermissions(ev.SecurityGroupRules.Egress),
 		}
 
 		_, err = svc.AuthorizeSecurityGroupEgress(&eReq)
