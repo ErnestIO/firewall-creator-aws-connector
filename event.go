@@ -16,6 +16,7 @@ var (
 	ErrDatacenterCredentialsInvalid = errors.New("Datacenter credentials invalid")
 	ErrSGNameInvalid                = errors.New("Security Group name invalid")
 	ErrSGRulesInvalid               = errors.New("Security Group must contain rules")
+	ErrSGRuleTypeInvalid            = errors.New("Security Group rule type invalid")
 	ErrSGRuleIPInvalid              = errors.New("Security Group rule ip invalid")
 	ErrSGRuleProtocolInvalid        = errors.New("Security Group rule protocol invalid")
 	ErrSGRuleFromPortInvalid        = errors.New("Security Group rule from port invalid")
@@ -82,6 +83,9 @@ func (ev *Event) Validate() error {
 	}
 
 	for _, rule := range ev.SecurityGroupRules {
+		if rule.Type == "" {
+			return ErrSGRuleTypeInvalid
+		}
 		if rule.IP == "" {
 			return ErrSGRuleIPInvalid
 		}
