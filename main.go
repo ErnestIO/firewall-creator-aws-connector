@@ -42,6 +42,26 @@ func eventHandler(m *nats.Msg) {
 	f.Complete()
 }
 
+func removeDefaultRule(svc *ec2.EC2, sgID *string) error {
+	perms := []*ec2.IpPermission{
+		&ec2.IpPermission{
+			FromPort:   aws.Int64(0),
+			ToPort:     aws.Int64(65535),
+			IpProtocol: aws.String("-1"),
+			IpRanges: []*ec2.IpRange{
+				&ec2.IpRange{CidrIp: aws.String("0.0.0.0/0")},
+			},
+		},
+	}
+
+	eReq := ec2.RevokeSecurityGroupEgressInput{
+		GroupId:       sgID,
+		IpPermissions: perms,
+	}
+	_, err := svc.RevokeSecurityGroupEgress(&eReq)
+	return err
+}
+
 func createFirewall(ev *Event) error {
 	creds := credentials.NewStaticCredentials(ev.DatacenterAccessKey, ev.DatacenterAccessToken, "")
 	svc := ec2.New(session.New(), &aws.Config{
@@ -62,6 +82,12 @@ func createFirewall(ev *Event) error {
 	}
 
 	ev.SecurityGroupAWSID = *resp.GroupId
+
+	// Remove default rule
+	err = removeDefaultRule(svc, resp.GroupId)
+	if err != nil {
+		return err
+	}
 
 	// Authorize Ingress
 	if len(ev.SecurityGroupRules.Ingress) > 0 {
