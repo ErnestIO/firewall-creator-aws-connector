@@ -71,7 +71,7 @@ func createFirewall(ev *Event) error {
 
 	// Create SecurityGroup
 	req := ec2.CreateSecurityGroupInput{
-		VpcId:       aws.String(ev.DatacenterVPCID),
+		VpcId:       aws.String(ev.VPCID),
 		GroupName:   aws.String(ev.SecurityGroupName),
 		Description: aws.String("Rules for: " + ev.SecurityGroupName),
 	}
